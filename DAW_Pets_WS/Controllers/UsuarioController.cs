@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAW_Pets_WS.Models;
 using DAW_Pets_WS.Models.Helpers;
+using System;
 
 namespace DAW_Pets_WS.Controllers
 {
@@ -22,15 +23,41 @@ namespace DAW_Pets_WS.Controllers
         [HttpGet("login/{user}/{pwd}")]
         public async Task<ActionResult<Usuario>> Login(string user, string pwd)
         {
-            var usuario = await _context.Usuario.Include(x => x.Persona).Include(y => y.Rol).Where(x => x.Login.Equals(user)).SingleOrDefaultAsync();
-            if (HashHelper.CheckHash(pwd, usuario.Password, usuario.Sal))
+            Usuario response = new Usuario();
+            Header header = new Header();
+            try
             {
-                return usuario;
+                var usuario = await _context.Usuario.Include(x => x.Persona).Include(y => y.Rol).Where(x => x.Login.Equals(user) && x.Estado == 1).SingleOrDefaultAsync();
+                if (usuario is null)
+                {
+
+                    header.CodigoRetorno = HeaderEnum.Incorrecto.ToString();
+                    header.DescRetorno = "El usuario no existe o está inactivo.";
+                }
+                else {
+                    if (HashHelper.CheckHash(pwd, usuario.Password, usuario.Sal))
+                    {
+
+                        response = usuario;
+                        header.CodigoRetorno = HeaderEnum.Correcto.ToString();
+                        header.DescRetorno = string.Empty;
+                    }
+                    else
+                    {
+                        header.CodigoRetorno = HeaderEnum.Incorrecto.ToString();
+                        header.DescRetorno = "Contraseña inválida";
+                    }
+                }                
             }
-            else
-            {
-                return NotFound();
+            catch (Exception e) {
+
+                header.CodigoRetorno = HeaderEnum.Incorrecto.ToString();
+                header.DescRetorno = e.Message;
             }
+
+            response.Header = header;
+            return Ok(response);
+
         }
 
         [HttpGet]
@@ -80,6 +107,6 @@ namespace DAW_Pets_WS.Controllers
 
             response.Header = header;
             return Ok(response);
-        }        
+        }
     }
 }

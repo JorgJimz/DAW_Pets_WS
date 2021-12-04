@@ -32,7 +32,7 @@ namespace DAW_Pets_WS.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Mascota>> GetMascota(int id)
         {
-            var mascota = await _context.Mascota.Include("Vacuna.VacunaNavigation").Include("Comentario.Usuario.Persona").FirstOrDefaultAsync(x => x.Id == id);
+            var mascota = await _context.Mascota.Include("Vacuna.VacunaNavigation").Include("Comentario.Usuario.Persona").Include("Solicitud").FirstOrDefaultAsync(x => x.Id == id);
 
             if (mascota == null)
             {

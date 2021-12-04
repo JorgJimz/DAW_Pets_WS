@@ -1,5 +1,7 @@
-﻿using System;
+﻿using DAW_Pets_WS.Models.Helpers;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
@@ -12,6 +14,9 @@ namespace DAW_Pets_WS.Models
             Comentario = new HashSet<Comentario>();
             Solicitud = new HashSet<Solicitud>();
         }
+
+        [NotMapped]
+        public Header Header { get; set; }
 
         public int Id { get; set; }
         public string Login { get; set; }
