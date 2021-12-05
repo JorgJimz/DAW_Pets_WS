@@ -89,7 +89,7 @@ namespace DAW_Pets_WS.Controllers
                     Password = hashed.Password,
                     Sal = hashed.Salt,
                     PersonaId = persona.Id,
-                    RolId = 1,
+                    RolId = persona.TipoUsuario,
                     Estado = persona.Estado
                 };
                 _context.Usuario.Add(user);

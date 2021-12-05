@@ -60,6 +60,12 @@ namespace DAW_Pets_WS.Controllers
 
         }
 
+        [HttpGet("roles")]
+        public async Task<ActionResult<IEnumerable<Rol>>> GetRoles()
+        {
+            return await _context.Rol.ToListAsync();
+        }
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuario()
         {

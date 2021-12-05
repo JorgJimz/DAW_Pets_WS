@@ -25,14 +25,14 @@ namespace DAW_Pets_WS.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Solicitud>>> GetSolicitud()
         {
-            return await _context.Solicitud.ToListAsync();
+            return await _context.Solicitud.Include("Usuario.Persona").Include("Mascota").Include("EstadoNavigation").ToListAsync();
         }
 
         // GET: api/Solicitud/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Solicitud>> GetSolicitud(int id)
         {
-            var solicitud = await _context.Solicitud.FindAsync(id);
+            var solicitud = await _context.Solicitud.Include("Usuario.Persona").Include("Mascota").Include("EstadoNavigation").Where(x => x.Id == id).FirstOrDefaultAsync();
 
             if (solicitud == null)
             {
@@ -42,35 +42,32 @@ namespace DAW_Pets_WS.Controllers
             return solicitud;
         }
 
-        // PUT: api/Solicitud/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSolicitud(int id, Solicitud solicitud)
+        public async Task<ActionResult<WS_Response<Solicitud>>> PutSolicitud(Solicitud solicitud)
         {
-            if (id != solicitud.Id)
-            {
-                return BadRequest();
-            }
+            WS_Response<Solicitud> response = new WS_Response<Solicitud>();
+            Header header = new Header();
 
-            _context.Entry(solicitud).State = EntityState.Modified;
+            Solicitud sModified = _context.Solicitud.Where(x => x.Id == solicitud.Id).FirstOrDefaultAsync().Result;
+            sModified.Estado = solicitud.Estado;
+            sModified.Detalle = solicitud.Detalle;
+            _context.Entry(sModified).State = EntityState.Modified;
 
             try
             {
                 await _context.SaveChangesAsync();
+                response.Objeto = sModified;
+                header.CodigoRetorno = HeaderEnum.Correcto.ToString();
+                header.DescRetorno = "Usuario activado.";
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException e)
             {
-                if (!SolicitudExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                header.CodigoRetorno = HeaderEnum.Correcto.ToString();
+                header.DescRetorno = e.Message;
             }
 
-            return NoContent();
+            response.Header = header;
+            return Ok(response);
         }
 
         // POST: api/Solicitud

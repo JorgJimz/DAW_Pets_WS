@@ -15,10 +15,10 @@ namespace DAW_Pets_WS.Models
         public int QPersonas { get; set; }
         public string TipoDomicilio { get; set; }
         public string Ubicacion { get; set; }
-        public int Cubierto { get; set; }
-        public int Bebe { get; set; }
-        public int Alergia { get; set; }
-        public int Mudanza { get; set; }
+        public int? Cubierto { get; set; }
+        public int? Bebe { get; set; }
+        public int? Alergia { get; set; }
+        public int? Mudanza { get; set; }
         public int? Estado { get; set; }
         public DateTime? FechaModificacion { get; set; }
         public string UsuarioModificacion { get; set; }
